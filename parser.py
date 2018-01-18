@@ -2,38 +2,24 @@ from rply import ParserGenerator
 
 from lexer import token_names, lex
 import ast
-# This is a list of the token names. precedence is an optional list of
-# tuples which specifies order of operation for avoiding ambiguity.
-# precedence must be one of "left", "right", "nonassoc".
-# cache_id is an optional string which specifies an ID to use for
-# caching. It should *always* be safe to use caching,
-# RPly will automatically detect when your grammar is
-# changed and refresh the cache for you.
+
+
 pg = ParserGenerator(token_names)
 
-# @pg.production("declist : INT varlst")
-# def declist_int(p):
-#     return p[0] + p[2]
+# Whole program
+@pg.production("program : statements")
+def program(p):
+	return ast.Program(p)
 
-# @pg.production("declist : declist INT varlst")
-# def declist_list(p):
-#     return p[0] + p[2]
-
-# @pg.production("varlst : ID")
-# def varlst_id(p):
-#     return [ast.Identifier(p[0].getstr())]
-
-@pg.production("statementlist : statement")
+@pg.production("statements : statement")
 def statementlist_statement(p):
-	return [p[0]]
+	return p[0]
 
-@pg.production("statement : statementlist statement")
-def statementlist_statementlist(p):
-	return p[0] + [p[1]]
+@pg.production("statements : statements statement")
+def statementlist_statementliststatement(p):
+	return p[0]
 
-
-
-@pg.production("statement : ID ASSIGN exp")
+@pg.production("statement : ID ASSIGN exp SEMICOLON")
 def assign(p):
 	assert p[0].gettokentype() == "ID"
 	return ast.Assignment(ast.IdentifierReference(p[0].getstr()), p[2])
@@ -44,14 +30,23 @@ def exp_term(p):
 
 @pg.production("exp : exp PLUS term ")
 @pg.production("exp : exp MINUS term")
+@pg.production("exp : exp MULTIPLY term")
+@pg.production("exp : exp DIVIDE term")
+@pg.production("exp : exp MOD term")
 def exp_binary_term(p):
 	token_type, left, right = p[1].gettokentype(), p[0], p[2]
 	if token_type == "PLUS":
 		return ast.Add(left, right)
 	elif token_type == "MINUS":
 		return ast.Subtract(left, right)
+	elif token_type == "MULTIPLY":
+		return ast.Multiply(left, right)
+	elif token_type == "DIVIDE":
+		return ast.Divide(left, right)
+	elif token_type == "MOD":
+		return ast.Modulus(left, right)
 	else:
-		assert False, "Shouldn't be here"
+		assert False, "Something went wrong"
 
 @pg.production("term : factor")
 def exp_factor(p):
@@ -60,7 +55,7 @@ def exp_factor(p):
 @pg.production("factor : NUM")
 def factor_num(p):
 	return ast.Number(int(p[0].getstr()))
-
+ 
 @pg.production("factor : MINUS NUM")
 def factor_negative_num(p):
 	return ast.Number(-int(p[1].getstr()))
@@ -72,13 +67,6 @@ def factor_id(p):
 @pg.production("factor : PAREN_L exp PAREN_R")
 def factor_parens(p):
 	return p[1]
-
-
-# @pg.production("declist : INT varlst")
-# def expr_num(p):
-#     return BoxInt(int(p[0].getstr()))
-
-
 
 @pg.error
 def error_handler(token):
@@ -96,6 +84,6 @@ if __name__ == "__main__":
 	from sys import argv
 	with open(argv[1], "r") as f:
 		p = parser.parse(lex(f.read()))
-		# pprint(p._asdict)
+		pprint(p.eval({}))
 		# pprint(p.eval({}))
-		print(p)
+		# print(p)

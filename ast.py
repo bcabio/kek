@@ -29,20 +29,14 @@ class IdentifierReference(ASTNode):
 		return context[self.name]
 
 class Program(ASTNode):
-	def __init__(self, name, decls, body):
-		self.name = name
-		self.decls = decls
+	def __init__(self, body):
 		self.body = body
 
 	def eval(self, context):
-		for identifier in self.decls:
-			context[identifier.name] = identifier.value
 		for instruction in self.body:
 			print(instruction)
 			instruction.eval(context)
-		for identifier in self.decls:
-			if context[identifier.name] is None:
-				print("Warning: identifier %s not used." % identifier.name)
+
 
 class BinaryOperation(ASTNode):
 	def __init__(self, left, right):
@@ -61,10 +55,13 @@ class Multiply(BinaryOperation):
 	def eval(self, context):
 		return self.left.eval(context) * self.right.eval(context)
 
-
 class Divide(BinaryOperation):
 	def eval(self, context):
 		return self.left.eval(context) / self.right.eval(context)
+
+class Modulus(BinaryOperation):
+	def eval(self, context):
+		return self.left.eval(context) % self.right.eval(context)
 
 class Assignment(ASTNode):
 	def __init__(self, identifier, value):

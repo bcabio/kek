@@ -10,8 +10,10 @@ operators = OrderedDict([
     ("ASSIGN", r"="),
     ("PLUS", r"\+"),
     ("MINUS", r"-"),
-    # ("DIVIDE", r"\/"),
-    # ("MOD", r"%"),
+    ("MULTIPLY", r"\*"),
+    ("DIVIDE", r"\/"),
+    ("MOD", r"%"),
+    ("SEMICOLON", r";")
     ])
 
 lg = LexerGenerator()
@@ -32,7 +34,7 @@ callbacks = {
 }
 
 lg.ignore(r"\s+")
-lg.ignore(r"^#.*")
+lg.ignore(r"#.*")
 lexer = lg.build()
 
 token_names = [rule.name for rule in lg.rules] + [name.upper() for name in reserved]
