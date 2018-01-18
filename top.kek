@@ -1,4 +1,6 @@
 bell = 2+3;
 nacho = 2-3;
+(nacho)
+(bell)
 # nacho = 2 + nacho;
 # lel

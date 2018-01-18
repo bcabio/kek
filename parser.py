@@ -7,17 +7,22 @@ import ast
 pg = ParserGenerator(token_names)
 
 # Whole program
-@pg.production("program : statements")
+@pg.production("program : block")
 def program(p):
 	return ast.Program(p)
 
+@pg.production("block : statements")
+def block(p):
+	return p[0]
+
 @pg.production("statements : statement")
 def statementlist_statement(p):
-	return p[0]
+	return [p[0]]
 
 @pg.production("statements : statements statement")
 def statementlist_statementliststatement(p):
-	return p[0]
+	# print(p[0] + [p[1]])
+	return p[0] + [p[1]]
 
 @pg.production("statement : ID ASSIGN exp SEMICOLON")
 def assign(p):
@@ -68,6 +73,10 @@ def factor_id(p):
 def factor_parens(p):
 	return p[1]
 
+@pg.production("statement : PAREN_L ID PAREN_R")
+def print_id(p):
+	return ast.WriteStatement(ast.IdentifierReference(p[1].getstr()))
+
 @pg.error
 def error_handler(token):
     raise ValueError('Ran into a %s where it wasn\'t expected' % token)
@@ -84,6 +93,10 @@ if __name__ == "__main__":
 	from sys import argv
 	with open(argv[1], "r") as f:
 		p = parser.parse(lex(f.read()))
+		# pprint(p.__dict__)
 		pprint(p.eval({}))
+		# pprint(p.body[0][0].value)
+		# pprint(p.body[0][0].identifier.name)
+		# pprint(p.__dict__)
 		# pprint(p.eval({}))
 		# print(p)

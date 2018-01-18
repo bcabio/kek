@@ -33,8 +33,8 @@ class Program(ASTNode):
 		self.body = body
 
 	def eval(self, context):
-		for instruction in self.body:
-			print(instruction)
+		for instruction in self.body[0]:
+			# print(instruction)
 			instruction.eval(context)
 
 
@@ -69,8 +69,8 @@ class Assignment(ASTNode):
 		self.value = value
 
 	def eval(self, context):
-		assert self.identifier in context
 		context[self.identifier.name] = self.value.eval(context)
+
 
 class ReadStatement(ASTNode):
 	def __init__(self, target):
@@ -83,7 +83,7 @@ class ReadStatement(ASTNode):
 			.eval(context))
 
 class WriteStatement(ASTNode):
-	def __init__(self, value, newline=False):
+	def __init__(self, value, newline=True):
 		self.value = value
 		self.newline = newline
 
