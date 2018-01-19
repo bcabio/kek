@@ -20,7 +20,7 @@ def statementlist_statementliststatement(p):
 	# print(p[0] + [p[1]])
 	return p[0] + [p[1]]
 
-@pg.production("statement : ID ASSIGN exp")
+@pg.production("statement : ID kek exp")
 def assign(p):
 	assert p[0].gettokentype() == "ID"
 	return ast.Assignment(ast.IdentifierReference(p[0].getstr()), p[2])
@@ -66,6 +66,11 @@ def factor_negative_num(p):
 def factor_id(p):
 	return ast.IdentifierReference(p[0].getstr())
 
+@pg.production("factor : PAREN_L exp PAREN_R")
+def factor_parens(p):
+	return p[1]
+
+# Boolean expressions
 @pg.production("exp : booleans")
 def boolean_expression(p):
 	return p[0]
@@ -85,9 +90,12 @@ def boolean_operations(p):
 	else:
 		assert False, "Something went wrong"
 
-# Boolean
-@pg.production("boolean : true")
-@pg.production("boolean : false")
+@pg.production("boolean : boolean_factor")
+def boolean_to_boolean_factor(p):
+	return p[0]
+
+@pg.production("boolean_factor : true")
+@pg.production("boolean_factor : false")
 def boolean(p):
 	boolean = p[0]
 	if boolean.gettokentype() == "true":
@@ -97,16 +105,20 @@ def boolean(p):
 	else:
 		assert False, "Something went wrong"
 
-@pg.production("boolean : not boolean")
-# Parenthesis precedence
-@pg.production("factor : PAREN_L exp PAREN_R")
-def factor_parens(p):
+@pg.production("boolean_factor : not boolean_factor")
+def not_boolean(p):
+	return ast.Boolean(not p[1].value)
+
+@pg.production("boolean_factor : PAREN_L booleans PAREN_R")
+def paren_boolean(p):
 	return p[1]
 
-# Implicit Print
-@pg.production("statement : PAREN_L ID PAREN_R")
+# Parenthesis precedence
+
+# Implicit Printing
+@pg.production("statement : PAREN_L exp PAREN_R")
 def print_id(p):
-	return ast.WriteStatement(ast.IdentifierReference(p[1].getstr()))
+	return ast.WriteStatement(p[1])
 
 @pg.error
 def error_handler(token):
