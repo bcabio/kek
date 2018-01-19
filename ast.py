@@ -5,10 +5,12 @@ try:
 except:
 	raw_input = input
 
+# Root Class
 class ASTNode(object):
 	def eval(self, context):
 		raise NotImplementedError(self.__class__)
-
+		
+# Types
 class Number(ASTNode):
 	def __init__(self, value):
 		self.value = value
@@ -16,6 +18,14 @@ class Number(ASTNode):
 	def eval(self, context):
 		return self.value
 
+class Boolean(ASTNode):
+	def __init__(self, value):
+		self.value = value
+
+	def eval(self, context):
+		return self.value
+
+# Placeholders
 class Identifier(ASTNode):
 	def __init__(self, value, name=None):
 		self.name = name
@@ -34,10 +44,17 @@ class Program(ASTNode):
 
 	def eval(self, context):
 		for instruction in self.body[0]:
-			# print(instruction)
 			instruction.eval(context)
 
+class Assignment(ASTNode):
+	def __init__(self, identifier, value):
+		self.identifier = identifier
+		self.value = value
 
+	def eval(self, context):
+		context[self.identifier.name] = self.value.eval(context)
+
+# Number
 class BinaryOperation(ASTNode):
 	def __init__(self, left, right):
 		self.left = left
@@ -63,13 +80,21 @@ class Modulus(BinaryOperation):
 	def eval(self, context):
 		return self.left.eval(context) % self.right.eval(context)
 
-class Assignment(ASTNode):
-	def __init__(self, identifier, value):
-		self.identifier = identifier
-		self.value = value
 
+# Boolean
+class BooleanOperation(ASTNode):
+	def __init__(self, left, right):
+		self.left = left
+		self.right = right
+
+class And(BooleanOperation):
 	def eval(self, context):
-		context[self.identifier.name] = self.value.eval(context)
+		return self.left.eval(context) and self.right.eval(context)
+
+class Or(BooleanOperation):
+	def eval(self, context):
+		return self.left.eval(context) or self.right.eval(context)
+
 
 
 class ReadStatement(ASTNode):

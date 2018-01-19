@@ -7,13 +7,9 @@ import ast
 pg = ParserGenerator(token_names)
 
 # Whole program
-@pg.production("program : block")
+@pg.production("program : statements")
 def program(p):
 	return ast.Program(p)
-
-@pg.production("block : statements")
-def block(p):
-	return p[0]
 
 @pg.production("statements : statement")
 def statementlist_statement(p):
@@ -24,7 +20,7 @@ def statementlist_statementliststatement(p):
 	# print(p[0] + [p[1]])
 	return p[0] + [p[1]]
 
-@pg.production("statement : ID ASSIGN exp SEMICOLON")
+@pg.production("statement : ID ASSIGN exp")
 def assign(p):
 	assert p[0].gettokentype() == "ID"
 	return ast.Assignment(ast.IdentifierReference(p[0].getstr()), p[2])
@@ -33,6 +29,7 @@ def assign(p):
 def exp_term(p):
     return p[0]
 
+# Numeric expression
 @pg.production("exp : exp PLUS term ")
 @pg.production("exp : exp MINUS term")
 @pg.production("exp : exp MULTIPLY term")
@@ -69,10 +66,44 @@ def factor_negative_num(p):
 def factor_id(p):
 	return ast.IdentifierReference(p[0].getstr())
 
+@pg.production("exp : booleans")
+def boolean_expression(p):
+	return p[0]
+
+@pg.production("booleans : boolean")
+def booleans_to_boolean(p):
+	return p[0]
+
+@pg.production("booleans : booleans and boolean")
+@pg.production("booleans : booleans or boolean")
+def boolean_operations(p):
+	token_type, left, right = p[1].gettokentype(), p[0], p[2]
+	if token_type == "and":
+		return ast.And(left, right)
+	elif token_type == "or":
+		return ast.Or(left, right)
+	else:
+		assert False, "Something went wrong"
+
+# Boolean
+@pg.production("boolean : true")
+@pg.production("boolean : false")
+def boolean(p):
+	boolean = p[0]
+	if boolean.gettokentype() == "true":
+		return ast.Boolean(True)
+	elif boolean.gettokentype() == "false":
+		return ast.Boolean(False)
+	else:
+		assert False, "Something went wrong"
+
+@pg.production("boolean : not boolean")
+# Parenthesis precedence
 @pg.production("factor : PAREN_L exp PAREN_R")
 def factor_parens(p):
 	return p[1]
 
+# Implicit Print
 @pg.production("statement : PAREN_L ID PAREN_R")
 def print_id(p):
 	return ast.WriteStatement(ast.IdentifierReference(p[1].getstr()))

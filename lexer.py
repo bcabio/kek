@@ -1,7 +1,7 @@
 from rply import LexerGenerator, Token
 from collections import OrderedDict
 
-reserved = []#["if", "else", "int", "end", "decls", "has"]
+reserved = ["true", "false", "and", "or", "not"]#["if", "else", "int", "end", "decls", "has"]
 
 operators = OrderedDict([
     # ("COMMA", ","),
@@ -13,20 +13,20 @@ operators = OrderedDict([
     ("MULTIPLY", r"\*"),
     ("DIVIDE", r"\/"),
     ("MOD", r"%"),
-    ("SEMICOLON", r";")
+    # ("SPACE", r" "),
     ])
 
 lg = LexerGenerator()
 
 lg.add("NUM", r"\d+")
-lg.add("ID", r"[a-zA-Z][a-zA-Z0-9]*")
+lg.add("ID", r"[a-zA-Z_][a-zA-Z0-9_]*")
 
 for key, value in operators.items():
     lg.add(key, value)
 
 def id_reserved(token):
     if token.value.lower() in reserved:
-        return Token(token.value.upper(), token.value)
+        return Token(token.value, token.value)
     return token
 
 callbacks = {
@@ -37,7 +37,7 @@ lg.ignore(r"\s+")
 lg.ignore(r"#.*")
 lexer = lg.build()
 
-token_names = [rule.name for rule in lg.rules] + [name.upper() for name in reserved]
+token_names = [rule.name for rule in lg.rules] + [name for name in reserved]
 
 def lex(buf):
     for token in lexer.lex(buf):

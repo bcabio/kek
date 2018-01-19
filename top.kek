@@ -1,5 +1,8 @@
-bell = 2+3;
-nacho = 2-3;
+bell = 2+3
+nacho = true
+# nacho = nacho - bell
+var2 = true and false
+(var2)
 (nacho)
 (bell)
 # nacho = 2 + nacho;
