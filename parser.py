@@ -4,7 +4,13 @@ from lexer import token_names, lex
 import ast
 
 
-pg = ParserGenerator(token_names)
+pg = ParserGenerator(
+	token_names,
+	precedence=[
+		('left', ['PLUS', 'MINUS']),
+		('left', ['MULTIPLY', 'DIVIDE', ]),
+		# ('left', ['PAREN_L, PAREN_R'])
+	])
 
 # Whole program
 @pg.production("program : statements")
@@ -20,21 +26,34 @@ def statementlist_statementliststatement(p):
 	# print(p[0] + [p[1]])
 	return p[0] + [p[1]]
 
-@pg.production("statement : ID kek exp")
+@pg.production("statement : ID kek assignment")
 def assign(p):
 	assert p[0].gettokentype() == "ID"
 	return ast.Assignment(ast.IdentifierReference(p[0].getstr()), p[2])
 
-@pg.production("exp : term")
+@pg.production("assignment : exp")
+def assignment_exp(p):
+	return p[0]
+
+# Expression definition
+@pg.production("exp : math_exp")
+def assignment_expression(p):
+	return p[0]
+
+@pg.production("exp : boolean_expression")
+def boolean_expression_assignment(p):
+	return p[0]
+
+# Numeric expression
+@pg.production("math_exp : term")
 def exp_term(p):
     return p[0]
 
-# Numeric expression
-@pg.production("exp : exp PLUS term ")
-@pg.production("exp : exp MINUS term")
-@pg.production("exp : exp MULTIPLY term")
-@pg.production("exp : exp DIVIDE term")
-@pg.production("exp : exp MOD term")
+@pg.production("math_exp : math_exp PLUS math_exp ")
+@pg.production("math_exp : math_exp MINUS math_exp")
+@pg.production("math_exp : math_exp MULTIPLY math_exp")
+@pg.production("math_exp : math_exp DIVIDE math_exp")
+@pg.production("math_exp : math_exp MOD math_exp")
 def exp_binary_term(p):
 	token_type, left, right = p[1].gettokentype(), p[0], p[2]
 	if token_type == "PLUS":
@@ -66,21 +85,21 @@ def factor_negative_num(p):
 def factor_id(p):
 	return ast.IdentifierReference(p[0].getstr())
 
-@pg.production("factor : PAREN_L exp PAREN_R")
+@pg.production("factor : PAREN_L math_exp PAREN_R")
 def factor_parens(p):
 	return p[1]
 
 # Boolean expressions
-@pg.production("exp : booleans")
+@pg.production("boolean_expression : booleans")
 def boolean_expression(p):
 	return p[0]
 
-@pg.production("booleans : boolean")
+@pg.production("booleans : bool_factor")
 def booleans_to_boolean(p):
 	return p[0]
 
-@pg.production("booleans : booleans and boolean")
-@pg.production("booleans : booleans or boolean")
+@pg.production("booleans : booleans and bool_factor")
+@pg.production("booleans : booleans or bool_factor")
 def boolean_operations(p):
 	token_type, left, right = p[1].gettokentype(), p[0], p[2]
 	if token_type == "and":
@@ -90,12 +109,12 @@ def boolean_operations(p):
 	else:
 		assert False, "Something went wrong"
 
-@pg.production("boolean : boolean_factor")
+@pg.production("bool_factor : bool_term")
 def boolean_to_boolean_factor(p):
 	return p[0]
 
-@pg.production("boolean_factor : true")
-@pg.production("boolean_factor : false")
+@pg.production("bool_term : true")
+@pg.production("bool_term : false")
 def boolean(p):
 	boolean = p[0]
 	if boolean.gettokentype() == "true":
@@ -105,18 +124,18 @@ def boolean(p):
 	else:
 		assert False, "Something went wrong"
 
-@pg.production("boolean_factor : not boolean_factor")
+@pg.production("bool_term : not bool_term")
 def not_boolean(p):
 	return ast.Boolean(not p[1].value)
 
-@pg.production("boolean_factor : PAREN_L booleans PAREN_R")
+@pg.production("booleans : PAREN_L boolean_expression PAREN_R")
 def paren_boolean(p):
 	return p[1]
 
 # Parenthesis precedence
 
 # Implicit Printing
-@pg.production("statement : PAREN_L exp PAREN_R")
+@pg.production("statement : PAREN_L math_exp PAREN_R")
 def print_id(p):
 	return ast.WriteStatement(p[1])
 
@@ -125,11 +144,6 @@ def error_handler(token):
     raise ValueError('Ran into a %s where it wasn\'t expected' % token)
 
 parser = pg.build()
-
-
-# print(parser.parse(lexer.lex("1 + 3 - 2+12-32")).value)   
-# print(parser.parse(lexer.lex("5%3+3")).)
-# print(parser.parse(lexer.lex("5 3")).eval())
 
 if __name__ == "__main__":
 	from pprint import pprint

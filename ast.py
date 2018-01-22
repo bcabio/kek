@@ -9,7 +9,7 @@ except:
 class ASTNode(object):
 	def eval(self, context):
 		raise NotImplementedError(self.__class__)
-		
+
 # Types
 class Number(ASTNode):
 	def __init__(self, value):
@@ -89,6 +89,7 @@ class BooleanOperation(ASTNode):
 
 class And(BooleanOperation):
 	def eval(self, context):
+		print(self.left, self.right.value)
 		return self.left.eval(context) and self.right.eval(context)
 
 class Or(BooleanOperation):
