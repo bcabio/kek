@@ -13,8 +13,8 @@ operators = OrderedDict([
     ("MULTIPLY", r"\*"),
     ("DIVIDE", r"\/"),
     ("MOD", r"%"),
-    ("CURLY_L", r"\{"),
-    ("CURLY_R", r"\}")
+    # ("CURLY_L", r"\{"),
+    # ("CURLY_R", r"\}")
     # ("SPACE", r" "),
     ])
 

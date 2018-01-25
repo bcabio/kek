@@ -1,8 +1,8 @@
-bell kek 2*3-6
+bell kek 2*(3-5)
 nacho kek true
 #(nacho)
 #(nacho - bell)
-# nacho kek (false and true) and not false
+nacho kek true or (not false and false)
 # nacho kek nacho - bell
 # var2 kek not not true
 # (var2)

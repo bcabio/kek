@@ -7,6 +7,8 @@ import ast
 pg = ParserGenerator(
 	token_names,
 	precedence=[
+		('left', ['AND', 'OR']),
+		('left', ['NOT',]),
 		('left', ['PLUS', 'MINUS']),
 		('left', ['MULTIPLY', 'DIVIDE', ]),
 		# ('left', ['PAREN_L, PAREN_R'])
@@ -49,11 +51,11 @@ def boolean_expression_assignment(p):
 def exp_term(p):
     return p[0]
 
-@pg.production("math_exp : math_exp PLUS math_exp ")
-@pg.production("math_exp : math_exp MINUS math_exp")
-@pg.production("math_exp : math_exp MULTIPLY math_exp")
-@pg.production("math_exp : math_exp DIVIDE math_exp")
-@pg.production("math_exp : math_exp MOD math_exp")
+@pg.production("math_exp : math_exp PLUS term ")
+@pg.production("math_exp : math_exp MINUS term")
+@pg.production("math_exp : math_exp MULTIPLY term")
+@pg.production("math_exp : math_exp DIVIDE term")
+@pg.production("math_exp : math_exp MOD term")
 def exp_binary_term(p):
 	token_type, left, right = p[1].gettokentype(), p[0], p[2]
 	if token_type == "PLUS":
@@ -128,7 +130,7 @@ def boolean(p):
 def not_boolean(p):
 	return ast.Boolean(not p[1].value)
 
-@pg.production("booleans : PAREN_L boolean_expression PAREN_R")
+@pg.production("bool_term : PAREN_L booleans PAREN_R")
 def paren_boolean(p):
 	return p[1]
 
