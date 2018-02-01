@@ -39,3 +39,27 @@ lol func_name (param1, param2, param3) {
 }
 ```
 This is how you would declare a function named `func_name` using the keyword `lol` with parameters `param1`, `param2`, and `param3`
+
+Okay well how do I actually use this thing?
+------
+Just create your file, so for example
+`top.kek`
+```
+bell kek 2*(3-5)
+nacho kek true or (not true and false)
+
+lol create_taco (meat, cheese, tortilla) {
+  (meat)
+  (cheese)
+  (tortilla)
+}
+```
+
+And then run the `parser.py` on the file so
+
+`python3 parser.py top.kek`
+
+and it will produce the output in std.out.
+
+
+That's all for now! More conditional and control statements are to come so stay tuned
