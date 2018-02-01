@@ -21,7 +21,6 @@ class Number(ASTNode):
 class Boolean(ASTNode):
 	def __init__(self, value):
 		self.value = value
-
 	def eval(self, context):
 		return self.value
 
@@ -94,6 +93,19 @@ class And(BooleanOperation):
 class Or(BooleanOperation):
 	def eval(self, context):
 		return self.left.eval(context) or self.right.eval(context)
+
+class FunctionDeclaration(ASTNode):
+	def __init__(self, function_id, function_param_names, function_body):
+		self.function_id = function_id
+		self.function_param_names = function_param_names
+		self.function_body = function_body
+
+	def eval(self, context):
+		context[self.function_id] = [self.function_param_names, self.function_body]
+
+class FunctionBody(ASTNode):
+	def __init__(self, function_body):
+		self.function_body = function_body
 
 
 

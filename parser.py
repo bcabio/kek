@@ -134,6 +134,35 @@ def not_boolean(p):
 def paren_boolean(p):
 	return p[1]
 
+# Functions
+@pg.production("statement : func_dec")
+def function_dec(p):
+	return p[0]
+
+@pg.production("func_dec : lol function_name func_params CURLY_L func_body CURLY_R")
+def function_dec_syn(p):
+	return ast.FunctionDeclaration(p[1].value, p[2], p[4])
+
+@pg.production("func_params : func_params func_param")
+def function_params(p):
+	return p[0] + [p[1]]
+
+@pg.production("func_params : func_param")
+def function_param(p):
+	return p[0]
+
+@pg.production("func_param : ID")
+def func_param(p):
+	return p[0]
+
+@pg.production("function_name : ID")
+def function_name(p):
+	return p[0]
+
+
+@pg.production("func_body : statements")
+def func_body(p):
+	return ast.FunctionBody(p[0])
 # Parenthesis precedence
 
 # Implicit Printing
