@@ -1,5 +1,7 @@
 import sys
 
+from exceptions import *
+
 try:
 	raw_input
 except:
@@ -94,6 +96,7 @@ class Or(BooleanOperation):
 	def eval(self, context):
 		return self.left.eval(context) or self.right.eval(context)
 
+# Functions
 class FunctionDeclaration(ASTNode):
 	def __init__(self, function_id, function_param_names, function_body):
 		self.function_id = function_id
@@ -101,12 +104,48 @@ class FunctionDeclaration(ASTNode):
 		self.function_body = function_body
 
 	def eval(self, context):
+		if self.function_id in context:
+			raise FunctionAlreadyDeclaredException(self.function_id)
 		context[self.function_id] = [self.function_param_names, self.function_body]
+		print(self.function_param_names)
 
 class FunctionBody(ASTNode):
 	def __init__(self, function_body):
 		self.function_body = function_body
 
+class FunctionCall(ASTNode):
+	def __init__(self, function_id, function_param_values):
+		self.function_id = function_id
+		self.function_param_values = function_param_values
+
+	def eval(self, context):
+		if self.function_id not in context:
+			raise FunctionNotDeclaredException(self.function_id)
+
+		# Names of the parameters given by function declaration
+		param_names = context[self.function_id][0]
+		function_body = context[self.function_id][1].function_body
+		# Dict to save variables that are overridden by the internal 
+		saved_outside_scope_variables = dict()
+
+		# Iterate over param name value pairs
+		# and if they're to be overridden, save them
+		# then over write them
+		for param_name, param_value in zip(param_names, self.function_param_values):
+			if param_name in context:
+				saved_outside_scope_variables[param_name] = context[param_name] 
+			context[param_name] = param_value.eval(context) 			
+		
+		# Execute the function body
+		for instruction in function_body:
+			instruction.eval(context)
+
+		# Delete the function parameters from the context
+		for param_name in param_names:
+			if param_name in saved_outside_scope_variables:
+				pass
+			elif param_name in context:
+				del context[param_name]
 
 
 class ReadStatement(ASTNode):

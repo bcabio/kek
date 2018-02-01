@@ -14,7 +14,8 @@ operators = OrderedDict([
     ("DIVIDE", r"\/"),
     ("MOD", r"%"),
     ("CURLY_L", r"\{"),
-    ("CURLY_R", r"\}")
+    ("CURLY_R", r"\}"),
+    ("COMMA", r",")
     # ("SPACE", r" "),
     ])
 

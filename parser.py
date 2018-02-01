@@ -139,17 +139,22 @@ def paren_boolean(p):
 def function_dec(p):
 	return p[0]
 
-@pg.production("func_dec : lol function_name func_params CURLY_L func_body CURLY_R")
+# Function Declaration
+@pg.production("func_dec : lol function_name PAREN_L func_params PAREN_R CURLY_L func_body CURLY_R")
 def function_dec_syn(p):
-	return ast.FunctionDeclaration(p[1].value, p[2], p[4])
+	return ast.FunctionDeclaration(p[1].value, p[3], p[6])
 
-@pg.production("func_params : func_params func_param")
+@pg.production("func_dec : lol function_name PAREN_L func_params PAREN_R CURLY_L CURLY_R")
+def function_dec_empty(p):
+	return ast.FunctionDeclaration(p[1].value, p[3], [])
+
+@pg.production("func_params : func_params COMMA func_param")
 def function_params(p):
-	return p[0] + [p[1]]
+	return [p[0]] + [p[2].value]
 
 @pg.production("func_params : func_param")
 def function_param(p):
-	return p[0]
+	return p[0].value
 
 @pg.production("func_param : ID")
 def func_param(p):
@@ -163,7 +168,27 @@ def function_name(p):
 @pg.production("func_body : statements")
 def func_body(p):
 	return ast.FunctionBody(p[0])
-# Parenthesis precedence
+
+# Function Execution
+@pg.production("statement : func_call")
+def function_call(p):
+	return p[0]
+
+@pg.production("func_call : function_name PAREN_L func_call_params PAREN_R")
+def function_call_syn(p):
+	return ast.FunctionCall(p[0].value, p[2])
+
+@pg.production("func_call_params : func_call_params COMMA func_call_param")
+def func_call_params(p):
+	return [p[0]] + [p[2]]
+
+@pg.production("func_call_params : func_call_param")
+def func_call_param(p):
+	return p[0]
+
+@pg.production("func_call_param : exp")
+def func_call_param_type(p):
+	return p[0]
 
 # Implicit Printing
 @pg.production("statement : PAREN_L math_exp PAREN_R")

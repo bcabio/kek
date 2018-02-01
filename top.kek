@@ -10,6 +10,11 @@ nacho kek true or (not false and false)
 (bell)
 # lel
 
-lol face poke {
-	(lmao)
+lol face (poke, dungeon){
+	(nacho)
+	(poke)
+	(dungeon)
+	(bell)
 }
+
+face(true, 2)
