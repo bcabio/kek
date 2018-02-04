@@ -23,6 +23,14 @@ class Number(ASTNode):
 class Boolean(ASTNode):
 	def __init__(self, value):
 		self.value = value
+
+	def eval(self, context):
+		return self.value
+
+class String(ASTNode):
+	def __init__(self, value):
+		self.value = value
+
 	def eval(self, context):
 		return self.value
 
@@ -107,7 +115,6 @@ class FunctionDeclaration(ASTNode):
 		if self.function_id in context:
 			raise FunctionAlreadyDeclaredException(self.function_id)
 		context[self.function_id] = [self.function_param_names, self.function_body]
-		print(self.function_param_names)
 
 class FunctionBody(ASTNode):
 	def __init__(self, function_body):
@@ -143,9 +150,13 @@ class FunctionCall(ASTNode):
 		# Delete the function parameters from the context
 		for param_name in param_names:
 			if param_name in saved_outside_scope_variables:
-				pass
+				continue
 			elif param_name in context:
 				del context[param_name]
+
+		# Add the saved variables back to the context
+		for saved_var in saved_outside_scope_variables:
+			context[saved_var] = saved_outside_scope_variables[saved_var]
 
 
 class ReadStatement(ASTNode):

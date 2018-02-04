@@ -39,11 +39,15 @@ def assignment_exp(p):
 
 # Expression definition
 @pg.production("exp : math_exp")
-def assignment_expression(p):
+def math_expression(p):
 	return p[0]
 
-@pg.production("exp : boolean_expression")
-def boolean_expression_assignment(p):
+@pg.production("exp : boolean_exp")
+def boolean_expression(p):
+	return p[0]
+
+@pg.production("exp : string_exp")
+def string_expression(p):
 	return p[0]
 
 # Numeric expression
@@ -92,7 +96,7 @@ def factor_parens(p):
 	return p[1]
 
 # Boolean expressions
-@pg.production("boolean_expression : booleans")
+@pg.production("boolean_exp : booleans")
 def boolean_expression(p):
 	return p[0]
 
@@ -133,6 +137,11 @@ def not_boolean(p):
 @pg.production("bool_term : PAREN_L booleans PAREN_R")
 def paren_boolean(p):
 	return p[1]
+
+# Strings
+@pg.production("string_exp :  STR ")
+def string_exp_to_string(p):
+	return ast.String(p[0].getstr())
 
 # Functions
 @pg.production("statement : func_dec")

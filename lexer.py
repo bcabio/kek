@@ -15,7 +15,7 @@ operators = OrderedDict([
     ("MOD", r"%"),
     ("CURLY_L", r"\{"),
     ("CURLY_R", r"\}"),
-    ("COMMA", r",")
+    ("COMMA", r","),
     # ("SPACE", r" "),
     ])
 
@@ -23,6 +23,7 @@ lg = LexerGenerator()
 
 lg.add("NUM", r"\d+")
 lg.add("ID", r"[a-zA-Z_][a-zA-Z0-9_]*")
+lg.add("STR", r"\"[a-zA-Z0-9_,.-]*\"")
 
 for key, value in operators.items():
     lg.add(key, value)

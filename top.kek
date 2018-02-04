@@ -1,3 +1,7 @@
+bell kek true
+(bell)
+yu kek "yellow"
+(yu)
 bell kek 2*(3-5)
 nacho kek true
 #(nacho)
@@ -9,12 +13,19 @@ nacho kek true or (not false and false)
 (nacho)
 (bell)
 # lel
-
 lol face (poke, dungeon){
 	(nacho)
 	(poke)
 	(dungeon)
 	(bell)
+	one kek 3
+	(one)
+
+	lol other (another, khalid) {
+		(another)
+		(khalid)
+	}
+	other(8, 4)
 }
 
 face(true, 2)
