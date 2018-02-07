@@ -25,7 +25,6 @@ def statementlist_statement(p):
 
 @pg.production("statements : statements statement")
 def statementlist_statementliststatement(p):
-	# print(p[0] + [p[1]])
 	return p[0] + [p[1]]
 
 @pg.production("statement : ID kek assignment")
@@ -37,7 +36,11 @@ def assign(p):
 def assignment_exp(p):
 	return p[0]
 
-# Expression definition
+
+
+"""
+	EXPRESSION DEFINITION
+"""	
 @pg.production("exp : math_exp")
 def math_expression(p):
 	return p[0]
@@ -50,7 +53,12 @@ def boolean_expression(p):
 def string_expression(p):
 	return p[0]
 
-# Numeric expression
+
+
+
+"""
+	NUMERIC EXPRESSION DEFINITION
+"""
 @pg.production("math_exp : term")
 def exp_term(p):
     return p[0]
@@ -95,7 +103,11 @@ def factor_id(p):
 def factor_parens(p):
 	return p[1]
 
-# Boolean expressions
+
+
+"""
+	BOOLEAN EXPRESSIONS
+"""	
 @pg.production("boolean_exp : booleans")
 def boolean_expression(p):
 	return p[0]
@@ -138,17 +150,28 @@ def not_boolean(p):
 def paren_boolean(p):
 	return p[1]
 
-# Strings
-@pg.production("string_exp :  STR ")
-def string_exp_to_string(p):
-	return ast.String(p[0].getstr())
 
-# Functions
+
+"""
+	STRING EPRESSIONS
+"""
+@pg.production("string_exp : STRING")
+def string_exp_to_string(p):
+	return ast.String(p[0].getstr().strip("\""))
+
+@pg.production("string_exp : STRING BRACKET_L NUM BRACKET_R")
+def string_indexing(p):
+	return 
+
+
+
+"""
+	FUNCTION DECLARATION
+"""	
 @pg.production("statement : func_dec")
 def function_dec(p):
 	return p[0]
 
-# Function Declaration
 @pg.production("func_dec : lol function_name PAREN_L func_params PAREN_R CURLY_L func_body CURLY_R")
 def function_dec_syn(p):
 	return ast.FunctionDeclaration(p[1].value, p[3], p[6])
@@ -173,12 +196,15 @@ def func_param(p):
 def function_name(p):
 	return p[0]
 
-
 @pg.production("func_body : statements")
 def func_body(p):
 	return ast.FunctionBody(p[0])
 
-# Function Execution
+
+
+"""
+	FUNCTION EXECUTION
+"""
 @pg.production("statement : func_call")
 def function_call(p):
 	return p[0]
@@ -199,11 +225,20 @@ def func_call_param(p):
 def func_call_param_type(p):
 	return p[0]
 
-# Implicit Printing
+
+
+"""
+	PRINTING (TO BE CHANGED)
+"""
 @pg.production("statement : PAREN_L math_exp PAREN_R")
 def print_id(p):
 	return ast.WriteStatement(p[1])
 
+
+
+"""
+	GENERIC PG ERROR HANDLING
+"""
 @pg.error
 def error_handler(token):
     raise ValueError('Ran into a %s where it wasn\'t expected' % token)
@@ -215,10 +250,6 @@ if __name__ == "__main__":
 	from sys import argv
 	with open(argv[1], "r") as f:
 		p = parser.parse(lex(f.read()))
-		# pprint(p.__dict__)
-		pprint(p.eval({}))
-		# pprint(p.body[0][0].value)
-		# pprint(p.body[0][0].identifier.name)
-		# pprint(p.__dict__)
-		# pprint(p.eval({}))
-		# print(p)
+
+		(p.eval({}))
+	

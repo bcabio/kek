@@ -1,23 +1,17 @@
-bell kek true
-(bell)
-yu kek "yellow"
-(yu)
-bell kek 2*(3-5)
-nacho kek true
-#(nacho)
-#(nacho - bell)
-nacho kek true or (not false and false)
-# nacho kek nacho - bell
-# var2 kek not not true
-# (var2)
-(nacho)
-(bell)
+
+
+value_1 kek 3 * 5 % 3 / 2 -1 + 3
+value_2 kek true and (not true or false)
+value_3 kek "hello"
+
+(value_1)
+(value_2)
+(value_3)
+
 # lel
 lol face (poke, dungeon){
-	(nacho)
 	(poke)
 	(dungeon)
-	(bell)
 	one kek 3
 	(one)
 
