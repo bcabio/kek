@@ -17,7 +17,7 @@ pg = ParserGenerator(
 # Whole program
 @pg.production("program : statements")
 def program(p):
-	return ast.Program(p)
+	return ast.Block(p)
 
 @pg.production("statements : statement")
 def statementlist_statement(p):
@@ -155,15 +155,19 @@ def paren_boolean(p):
 """
 	STRING EPRESSIONS
 """
+@pg.production("string_exp : ID ")
 @pg.production("string_exp : STRING")
+@pg.production("string_exp : string_exp BRACKET_L NUM COMMA NUM BRACKET_R")
 def string_exp_to_string(p):
-	return ast.String(p[0].getstr().strip("\""))
-
-@pg.production("string_exp : STRING BRACKET_L NUM BRACKET_R")
-def string_indexing(p):
-	return 
-
-
+	token_type = p[0].gettokentype()
+	
+	if token_type == "ID":
+		return ast.IdentifierReference(p[0].getstr())
+	# FIX. String has no prop gettokentype
+	elif token_type == "STRING":
+		return ast.String(p[0].getstr()[1:-1])
+	elif token_type == "string_exp":
+		return ast.String(p[0].getstr()[1 + int(p[2].value) : 1 + int(p[4].value)])
 
 """
 	FUNCTION DECLARATION
