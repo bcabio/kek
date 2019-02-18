@@ -4,9 +4,9 @@ value_1 kek 3 * 5 % 3 / 2 -1 + 3
 value_2 kek true and (not true or false)
 value_3 kek "hello"
 
-(value_1)
-(value_2)
-(value_3)
+#(value_1)
+#(value_2)
+(value_3[0])
 
 # lel
 lol face (poke, dungeon){
@@ -20,6 +20,7 @@ lol face (poke, dungeon){
 		(khalid)
 	}
 	other(8, 4)
+	kdone 3
 }
 
 face(true, 2)

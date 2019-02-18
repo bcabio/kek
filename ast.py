@@ -143,10 +143,18 @@ class FunctionCall(ASTNode):
 				saved_outside_scope_variables[param_name] = context[param_name] 
 			context[param_name] = param_value.eval(context) 			
 		
+		# Temp var to hold return value
+		ret = None
+		
 		# Execute the function body
 		for instruction in function_body:
-			instruction.eval(context)
-
+			if type(instruction).__name__ == "ReturnStatement":
+				print(instruction)
+				ret = instruction.eval(context)
+				print(type(ret), 'lmeo')
+				break
+			else:
+				instruction.eval(context)
 		# Delete the function parameters from the context
 		for param_name in param_names:
 			if param_name in saved_outside_scope_variables:
@@ -158,6 +166,26 @@ class FunctionCall(ASTNode):
 		for saved_var in saved_outside_scope_variables:
 			context[saved_var] = saved_outside_scope_variables[saved_var]
 
+		if not ret:
+			return ret
+
+class ReturnStatement(ASTNode):
+	def __init__(self, value):
+		self.value = value
+
+	def eval(self, context):
+		return self.value.eval(context)
+
+class IndexOperation(ASTNode):
+	def __init__(self, entity, index):
+		self.entity = entity	
+		self.index = index
+
+	def eval(self, context):
+		variable = self.entity.eval(context)
+		if not hasattr(variable, "__getitem__"):
+			raise MissingAttribute(self.entity, "__getitem__")
+		return variable[self.index]
 
 class ReadStatement(ASTNode):
 	def __init__(self, target):

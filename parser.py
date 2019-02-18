@@ -159,11 +159,19 @@ def paren_boolean(p):
 def string_exp_to_string(p):
 	return ast.String(p[0].getstr().strip("\""))
 
-@pg.production("string_exp : STRING BRACKET_L NUM BRACKET_R")
+@pg.production("string_exp : STRING BRACKET_L math_exp BRACKET_R")
 def string_indexing(p):
-	return 
+	index = p[2].value
+	string = ast.String(p[0].getstr().strip("\""))
 
+	return ast.IndexOperation(string, index)
 
+@pg.production("string_exp : ID BRACKET_L math_exp BRACKET_R")
+def string_variable_indexing(p):
+	index = p[2].value
+	variable = ast.IdentifierReference(p[0].getstr())
+	
+	return ast.IndexOperation(variable, index)
 
 """
 	FUNCTION DECLARATION
@@ -200,6 +208,10 @@ def function_name(p):
 def func_body(p):
 	return ast.FunctionBody(p[0])
 
+@pg.production("statement : kdone exp")
+def return_statement(p):
+	return ast.ReturnStatement(p[1])
+
 
 
 """
@@ -230,7 +242,7 @@ def func_call_param_type(p):
 """
 	PRINTING (TO BE CHANGED)
 """
-@pg.production("statement : PAREN_L math_exp PAREN_R")
+@pg.production("statement : PAREN_L exp PAREN_R")
 def print_id(p):
 	return ast.WriteStatement(p[1])
 

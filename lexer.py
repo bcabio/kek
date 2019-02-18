@@ -1,7 +1,7 @@
 from rply import LexerGenerator, Token
 from collections import OrderedDict
 
-reserved = ["true", "false", "and", "or", "not", "kek", "lol"]#["if", "else", "int", "end", "decls", "has"]
+reserved = ["true", "false", "and", "or", "not", "kek", "lol", "kdone"]#["if", "else", "int", "end", "decls", "has"]
 
 operators = OrderedDict([
     # ("COMMA", ","),
