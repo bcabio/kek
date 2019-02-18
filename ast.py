@@ -47,7 +47,7 @@ class IdentifierReference(ASTNode):
 	def eval(self, context):
 		return context[self.name]
 
-class Program(ASTNode):
+class Block(ASTNode):
 	def __init__(self, body):
 		self.body = body
 
